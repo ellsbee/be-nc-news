@@ -3,6 +3,7 @@ const testData = require("../db/data/test-data/index.js");
 const seed = require("../db/seeds/seed.js");
 const request = require("supertest");
 const app = require("../app");
+const fs = require("fs/promises")
 
 
 beforeEach(() => {
@@ -38,6 +39,20 @@ describe('testing correct access to /api/topics', () => {
             expect(msg).toBe('Not Found')
             })
         })
+});
+
+describe('Returning all available endpoints in a JSON object on the endpoint /api', () => {
+    test('200: responds with an accurate JSON object', () => {
+        return fs.readFile("endpoints.json", "utf8").then((fileContents) => {
+            const endpoints = JSON.parse(fileContents);
+            return request(app)
+            .get("/api")
+            .expect(200)
+            .then(({ body }) => {
+            expect(body).toEqual(endpoints);
+        });
+    });
+});
 });
 
 
