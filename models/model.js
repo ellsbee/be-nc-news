@@ -14,6 +14,7 @@ exports.selectArticle = (article_id) => {
     if(!article_id || isNaN(article_id)){
         return Promise.reject({status: 400, msg: 'Bad Request'})
     }
+
     const sqlQuery = `SELECT * FROM articles WHERE article_id = $1`;
     const queryValues = [article_id];
     
@@ -43,6 +44,26 @@ exports.selectAllArticles = () => {
     ORDER BY articles.created_at DESC;
 `;
     return db.query(sqlQuery)
+    .then(({rows}) => {
+        if(rows.length === 0){
+            return Promise.reject({status: 404, msg: 'Not Found'})
+        }
+        return rows;
+    })
+}
+
+exports.selectCommentsByArticleId = (article_id) => {
+    const sqlQuery = `SELECT 
+    comment_id,
+    votes,
+    created_at,
+    author,
+    body,
+    article_id
+    FROM comments WHERE article_id = $1
+    ORDER BY created_at DESC;
+`;
+    return db.query(sqlQuery, [article_id])
     .then(({rows}) => {
         if(rows.length === 0){
             return Promise.reject({status: 404, msg: 'Not Found'})

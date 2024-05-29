@@ -81,7 +81,6 @@ describe('GET /api/articles/:article_id', () => {
             expect(body.msg).toBe('Bad Request'); 
         }); 
     }); 
-
     test('Returns 404: Not Found when user searches for an article id that does not exist', () => { 
         return request(app)
         .get('/api/articles/9999')
@@ -122,6 +121,45 @@ describe('testing correct access to /api/articles', () => {
         expect(body.msg).toBe('Not Found')
         })
     })
+});
+
+describe('GET /api/articles/:article_id/comments', () => {
+    test('200 - returns all associated comments from a specific article when searched for by article_id', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({ body }) => { 
+        expect(body.comments).toBeInstanceOf(Array); 
+        expect(body.comments).toBeSortedBy('created_at', {descending: true});
+        body.comments.forEach((comment) => { 
+            expect(comment).toEqual( expect.objectContaining({ 
+                comment_id: expect.any(Number), 
+                votes: expect.any(Number), 
+                created_at: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String), 
+                article_id: expect.any(Number), 
+                }) 
+            ); 
+        }); 
+    }); 
+});
+    test('Responds with 404: Not Found when a user inputs incorrect endpoint', () => {
+    return request(app)
+    .get("/api/endpoint-does-not-exist")
+    .expect(404)
+    .then(({body}) => {
+        expect(body.msg).toBe('Not Found')
+        })
+    })
+    test('Returns 404: Not Found when user searches for an article id that does not exist', () => { 
+        return request(app)
+        .get('/api/articles/9999/comments')
+        .expect(404)
+        .then(({ body }) => { 
+            expect(body.msg).toBe('Not Found'); 
+        }); 
+    }); 
 });
 
 
