@@ -54,48 +54,74 @@ describe('Returning all available endpoints in a JSON object on the endpoint /ap
 });
 });
 
-describe('returns a chosen article by id', () => {
-    test('200: OK', () => {
+describe('GET /api/articles/:article_id', () => { 
+    test('200 - returns a chosen article by id', () => { 
+        return request(app) 
+        .get('/api/articles/2')
+        .expect(200) 
+        .then(({ body }) => { 
+            expect(body.article).toMatchObject(({ 
+                    author: expect.any(String), 
+                    title: expect.any(String), 
+                    article_id: 2, 
+                    body: expect.any(String), 
+                    topic: expect.any(String), 
+                    created_at: expect.any(String), 
+                    votes: expect.any(Number), 
+                    article_img_url: expect.any(String), 
+                }) ); 
+            }); 
+        }); 
+
+    test('Returns 400: Bad Request when article id requested is invalid or not entered', () => { 
         return request(app)
-        .get("/api/articles?article_id=2")
-        .expect(200)
-        .then(({ body }) => {
-            expect(body.article).toMatchObject({
-                article_id: 2,
-                title: expect.any(String),
-                topic: expect.any(String),
-                author: expect.any(String),
-                body: expect.any(String),
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-                article_img_url: expect.any(String),
-            });
-        });
-    });
-    test('Returns 400: Bad Request when article id requested is invalid or not entered', () => {
-        return request(app)
-        .get("/api/articles?article_id=NaN")
+        .get('/api/articles/doesNotExist')
         .expect(400)
-        .then(({body}) => {
-            expect(body.msg).toBe('Bad Request')
-            })
-        })
-    test('Returns 400: Bad Request when article id requested is invalid or not entered', () => {
+        .then(({ body }) => { 
+            expect(body.msg).toBe('Bad Request'); 
+        }); 
+    }); 
+
+    test('Returns 404: Not Found when user searches for an article id that does not exist', () => { 
         return request(app)
-        .get("/api/articles?article_id=")
-        .expect(400)
-        .then(({body}) => {
-            expect(body.msg).toBe('Bad Request')
-            })
-        })
-    test('Returns 404: Not Found when user searches for an article id that does not exist', () => {
-        return request(app)
-        .get("/api/articles?article_id=9999")
+        .get('/api/articles/9999')
         .expect(404)
-        .then(({body}) => {
-            expect(body.msg).toBe('Not Found')
-            })
+        .then(({ body }) => { 
+            expect(body.msg).toBe('Not Found'); 
+        }); 
+    }); 
+});
+
+describe('testing correct access to /api/articles', () => {
+    test('200: responds with an array of all available article objects', () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => { 
+        expect(body.articles).toHaveLength(13); 
+        body.articles.forEach((article) => { 
+            expect(article).toEqual( expect.objectContaining({ 
+                author: expect.any(String), 
+                title: expect.any(String), 
+                article_id: expect.any(Number), 
+                topic: expect.any(String), 
+                created_at: expect.any(String), 
+                votes: expect.any(Number), 
+                article_img_url: expect.any(String), 
+                comment_count: expect.any(String), 
+            }) ); 
+            expect(article).not.toHaveProperty("body"); 
+        }); 
+    }); 
+});
+    test('Responds with 404: Not Found when a user inputs incorrect endpoint', () => {
+    return request(app)
+    .get("/api/endpoint-does-not-exist")
+    .expect(404)
+    .then(({body}) => {
+        expect(body.msg).toBe('Not Found')
         })
+    })
 });
 
 
