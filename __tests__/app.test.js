@@ -35,8 +35,7 @@ describe('testing correct access to /api/topics', () => {
         .get("/api/endpoint-does-not-exist")
         .expect(404)
         .then(({body}) => {
-            const {msg} = body
-            expect(msg).toBe('Not Found')
+            expect(body.msg).toBe('Not Found')
             })
         })
 });
@@ -53,6 +52,50 @@ describe('Returning all available endpoints in a JSON object on the endpoint /ap
         });
     });
 });
+});
+
+describe('returns a chosen article by id', () => {
+    test('200: OK', () => {
+        return request(app)
+        .get("/api/articles?article_id=2")
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.article).toMatchObject({
+                article_id: 2,
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+            });
+        });
+    });
+    test('Returns 400: Bad Request when article id requested is invalid or not entered', () => {
+        return request(app)
+        .get("/api/articles?article_id=NaN")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+            })
+        })
+    test('Returns 400: Bad Request when article id requested is invalid or not entered', () => {
+        return request(app)
+        .get("/api/articles?article_id=")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+            })
+        })
+    test('Returns 404: Not Found when user searches for an article id that does not exist', () => {
+        return request(app)
+        .get("/api/articles?article_id=9999")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Not Found')
+            })
+        })
 });
 
 
