@@ -60,5 +60,43 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "adds a comment for an article",
+    "requestBody": {
+      "username": "string",
+      "body": "string"
+    },
+    "exampleResponse": {
+      "comment": {
+        "author": "butter_bridge",
+        "comment_id": 10,
+        "votes": 0,
+        "created_at": "2024-05-30T12:00:00.000Z",
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "article_id": 1
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates vote count on an article by article_id",
+    "requestBody": {
+      "inc_votes": "integer"
+    },
+    "exampleRequest": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": "2020-07-09T20:11:00.000Z",
+        "votes": 99,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
   }
 }

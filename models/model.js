@@ -72,7 +72,6 @@ exports.selectCommentsByArticleId = (article_id) => {
     })
 }
 
-
 exports.addCommentToArticle = (article_id, username, body) => {
     if(!body || !username){
         return Promise.reject({status: 400, msg: 'Field Missing'})
@@ -91,5 +90,23 @@ exports.addCommentToArticle = (article_id, username, body) => {
     .then(({ rows }) => {
         return rows[0];
     })
+}
+
+exports.updateArticleVoteCountByArtileId = (article_id, inc_votes) => {
+    const sqlQuery = `
+    UPDATE articles 
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *`;
+
+    const queryValues = [inc_votes, article_id];
+
+    return db.query(sqlQuery, queryValues)
+    .then(({ rows }) => {
+        if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: 'Not Found' });
+    }
+    return rows;
+    });
 }
 
