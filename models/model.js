@@ -132,3 +132,14 @@ exports.removeCommentByCommentId = (comment_id) => {
     });
 }
 
+exports.selectUsers = () => {
+    return db.query('SELECT * FROM users')
+    .then(({rows}) => {
+        if(rows.length === 0){
+            return Promise.reject({status: 404, msg: 'Not Found'})
+        }
+        console.groupCollapsed(rows, '------ rows')
+        return rows
+    })
+}
+
