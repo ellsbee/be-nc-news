@@ -72,3 +72,24 @@ exports.selectCommentsByArticleId = (article_id) => {
     })
 }
 
+
+exports.addCommentToArticle = (article_id, username, body) => {
+    if(!body || !username){
+        return Promise.reject({status: 400, msg: 'Field Missing'})
+    }
+    const sqlQuery = `
+    INSERT INTO 
+    comments 
+    (article_id, author, body, votes, created_at) 
+    VALUES 
+    ($1, $2, $3, 0, NOW())
+    RETURNING *`;
+
+    const queryValues = [article_id, username, body];
+
+    return db.query(sqlQuery, queryValues)
+    .then(({ rows }) => {
+        return rows[0];
+    })
+}
+
