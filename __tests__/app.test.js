@@ -198,6 +198,54 @@ describe('POST /api/articles/:article_id/comments', () => {
     });
 });
 
-
-
+describe('PATCH /api/articles/:article_id', () => {
+    test('200: responds with the updated article', () => {
+        return request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(({ body }) => {
+                expect(body).toHaveProperty('article_id', 1);
+                expect(body).toHaveProperty('votes', expect.any(Number));
+        });
+    });
+    test('200: successfully increases vote count of an article', () => {
+        return request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(( {body} ) => {
+                expect(body.article_id).toBe(1);
+                expect(body.votes).toBe(101);
+        });
+    });
+    test('200: successfully decreases vote count of an article', () => {
+        return request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: -1 })
+            .expect(200)
+            .then(( {body} ) => {
+                expect(body.article_id).toBe(1);
+                expect(body.votes).toBe(99);
+        });
+    });
+    test('400: responds with Bad Request when invalid article_id entered', () => {
+        return request(app)
+            .patch('/api/articles/invalid')
+            .send({ inc_votes: 1 })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad Request');
+            });
+        });
+    test('404 - responds with Not Found when the article_id entered does not exist', () => {
+        return request(app)
+            .patch('/api/articles/999999')
+            .send({ inc_votes: 1 })
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not Found');
+            });
+        });
+});
 

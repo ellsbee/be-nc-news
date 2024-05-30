@@ -1,5 +1,5 @@
 const express = require("express")
-const {getTopics, getArticleById, getArticles, getCommentsByArticleId, postCommentToArticle} = require("./controllers/controller")
+const {getTopics, getArticleById, getArticles, getCommentsByArticleId, postCommentToArticle, patchVoteCount} = require("./controllers/controller")
 const {getEndpoints} = require("./controllers/controller.endpoints")
 const app = express()
 
@@ -11,6 +11,7 @@ app.get('/api/articles/:article_id', getArticleById)
 app.get('/api/articles', getArticles)
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 app.post('/api/articles/:article_id/comments', postCommentToArticle)
+app.patch('/api/articles/:article_id', patchVoteCount);
 
 
 app.all('*', (req, res, next) => { 
