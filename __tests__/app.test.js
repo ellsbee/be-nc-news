@@ -280,3 +280,30 @@ describe('DELETE /api/comments/:comment_id', () => {
             });
     });
 });
+
+describe('testing correct access to /api/users', () => {
+    test('200: responds with an array of user objects, each with properties of username, name and avatar_url', () => {
+        return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+            const { users } = body;
+            expect(users).toHaveLength(4);
+            users.forEach((user) => {
+            expect(user).toMatchObject({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String)
+            });
+            });
+        });
+    });
+    test('404: Not Found', () => {
+        return request(app)
+        .get("/api/endpoint-does-not-exist")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Not Found')
+            })
+        })
+});
