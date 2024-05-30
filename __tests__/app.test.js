@@ -162,4 +162,42 @@ describe('GET /api/articles/:article_id/comments', () => {
     }); 
 });
 
+describe('POST /api/articles/:article_id/comments', () => {
+    test('201: successfully posts a comment to an article', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({ username: 'butter_bridge', body: 'Test Comment' })
+        .expect(201)
+        .then(({ body }) => { 
+            expect(body.comment).toBeDefined(); 
+            expect(body.comment).toHaveProperty('author', 'butter_bridge');
+            expect(body.comment).toHaveProperty('body', 'Test Comment');
+            expect(body.comment).toHaveProperty('article_id', 1);
+            expect(body.comment).toHaveProperty('comment_id');
+            expect(body.comment).toHaveProperty('created_at');
+            expect(body.comment).toHaveProperty('votes', 0);
+        }); 
+    });
+    test('responds with 400 if user fails to input a comment (message body is missing)', () => {
+        return request(app)
+            .post('/api/articles/1/comments')
+            .send({ username: 'butter_bridge' })
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Field Missing')
+            })
+    });
+    test('responds with 400 if username is not entered', () => {
+        return request(app)
+            .post('/api/articles/1/comments')
+            .send({ comment: 'Test Comment' })
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Field Missing')
+            })
+    });
+});
+
+
+
 
