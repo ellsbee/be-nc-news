@@ -110,3 +110,25 @@ exports.updateArticleVoteCountByArtileId = (article_id, inc_votes) => {
     });
 }
 
+exports.removeCommentByCommentId = (comment_id) => {
+    if(!comment_id){
+        return Promise.reject({status: 400, msg: 'Bad Request'})
+    }
+    const sqlQuery = `
+    DELETE FROM 
+    comments 
+    WHERE 
+    comment_id = $1
+    RETURNING *`;
+
+    const queryValues = [comment_id]
+
+    return db.query(sqlQuery, queryValues)
+    .then(({ rows }) => {
+        if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: 'Not Found' });
+    }
+    return rows;
+    });
+}
+

@@ -1,4 +1,4 @@
-const {selectTopics, selectArticle, selectAllArticles, selectCommentsByArticleId, addCommentToArticle, updateArticleVoteCountByArtileId } = require("../models/model")
+const {selectTopics, selectArticle, selectAllArticles, selectCommentsByArticleId, addCommentToArticle, updateArticleVoteCountByArtileId, removeCommentByCommentId } = require("../models/model")
 
 exports.getTopics = (req, res, next) => {
     selectTopics().then((topics) => {
@@ -50,13 +50,26 @@ exports.patchVoteCount = (req, res, next) => {
     const {inc_votes} = req.body;    
     updateArticleVoteCountByArtileId(article_id, inc_votes)
     .then(updatedArticle => {
-        console.log(updatedArticle[0])
         res.status(200).send(updatedArticle[0])
     })
     .catch(err => {
         next(err);
     });
 }
+
+exports.deleteCommentByCommentId = (req, res, next) => {
+    const {comment_id} = req.params
+    removeCommentByCommentId(comment_id)
+    .then(() => {
+        res.status(204).send();
+    })
+    .catch(err => {
+        next(err);
+    });
+};
+
+
+
 
 
 
