@@ -123,6 +123,50 @@ describe('testing correct access to /api/articles', () => {
     })
 });
 
+describe('responds with articles filtered by topic', () => {
+    test('200: responds with an array of articles filtered by chosen topic', () => {
+        return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => { 
+        expect(body.articles).toHaveLength(12); 
+        body.articles.forEach((article) => { 
+            expect(article).toEqual( expect.objectContaining({ 
+                author: expect.any(String), 
+                title: expect.any(String), 
+                article_id: expect.any(Number), 
+                topic: expect.any(String), 
+                created_at: expect.any(String), 
+                votes: expect.any(Number), 
+                article_img_url: expect.any(String), 
+                comment_count: expect.any(String), 
+            }) ); 
+            body.articles.forEach((article) => {
+                expect(article).toHaveProperty('topic', 'mitch'); 
+            })
+        }); 
+    }); 
+});
+    test('200: responds with all articles when not filtered by topic', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeInstanceOf(Array);
+            expect(articles).not.toHaveLength(0);
+        });
+    });
+    test('404: responds with Not Found when requesting an invalid topic', () => {
+        return request(app)
+        .get('/api/articles?topic=invalid')
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Not Found');
+        });
+    });
+});
+
 describe('GET /api/articles/:article_id/comments', () => {
     test('200 - returns all associated comments from a specific article when searched for by article_id', () => {
         return request(app)
