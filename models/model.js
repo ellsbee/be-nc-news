@@ -15,7 +15,19 @@ exports.selectArticle = (article_id) => {
         return Promise.reject({status: 400, msg: 'Bad Request'})
     }
 
-    const sqlQuery = `SELECT * FROM articles WHERE article_id = $1`;
+    const sqlQuery = `
+    SELECT 
+    articles.*, COUNT(comments.article_id) AS comment_count
+    FROM articles
+    LEFT JOIN 
+    comments 
+    ON 
+    comments.article_id = articles.article_id
+    WHERE 
+    articles.article_id = $1
+    GROUP BY 
+    articles.article_id;
+    ;`
     const queryValues = [article_id];
     
     return db.query(sqlQuery, queryValues)
@@ -77,6 +89,7 @@ exports.selectCommentsByArticleId = (article_id) => {
 `;
     return db.query(sqlQuery, [article_id])
     .then(({rows}) => {
+        //console.log(rows,'--------rows')
         if(rows.length === 0){
             return Promise.reject({status: 404, msg: 'Not Found'})
         }

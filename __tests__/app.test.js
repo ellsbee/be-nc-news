@@ -57,38 +57,39 @@ describe('Returning all available endpoints in a JSON object on the endpoint /ap
 describe('GET /api/articles/:article_id', () => { 
     test('200 - returns a chosen article by id', () => { 
         return request(app) 
-        .get('/api/articles/2')
+        .get('/api/articles/1')
         .expect(200) 
         .then(({ body }) => { 
+            expect(body.article.comment_count).toEqual('11')
             expect(body.article).toMatchObject(({ 
                     author: expect.any(String), 
                     title: expect.any(String), 
-                    article_id: 2, 
+                    article_id: 1, 
                     body: expect.any(String), 
                     topic: expect.any(String), 
                     created_at: expect.any(String), 
                     votes: expect.any(Number), 
-                    article_img_url: expect.any(String), 
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(String), 
                 }) ); 
             }); 
         }); 
-
-    test('Returns 400: Bad Request when article id requested is invalid or not entered', () => { 
-        return request(app)
-        .get('/api/articles/doesNotExist')
-        .expect(400)
-        .then(({ body }) => { 
-            expect(body.msg).toBe('Bad Request'); 
-        }); 
+        test('400: Bad Request when article id requested is invalid or not entered', () => { 
+            return request(app)
+            .get('/api/articles/doesNotExist')
+            .expect(400)
+            .then(({ body }) => { 
+                expect(body.msg).toBe('Bad Request'); 
+            }); 
     }); 
-    test('Returns 404: Not Found when user searches for an article id that does not exist', () => { 
-        return request(app)
-        .get('/api/articles/9999')
-        .expect(404)
-        .then(({ body }) => { 
-            expect(body.msg).toBe('Not Found'); 
+        test('404: Not Found when user searches for an article id that does not exist', () => { 
+            return request(app)
+            .get('/api/articles/9999')
+            .expect(404)
+            .then(({ body }) => { 
+                expect(body.msg).toBe('Not Found'); 
+            }); 
         }); 
-    }); 
 });
 
 describe('testing correct access to /api/articles', () => {

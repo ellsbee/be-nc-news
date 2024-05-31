@@ -11,7 +11,7 @@
   },
   "GET /api/articles/:article_id": {
     "description": "retreives an article chosen by id",
-    "queries": ["article_id"],
+    "queries": ["article_id", "comment_count"],
     "exampleResponse": {
       "article": [
         {
@@ -23,7 +23,8 @@
             "created_at": 1594329060000,
             "votes": 100,
             "article_img_url":
-              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            "comment_count": "11"
           }
       ]
     }
