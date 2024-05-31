@@ -27,8 +27,8 @@ exports.selectArticle = (article_id) => {
     });
 };
 
-exports.selectAllArticles = () => {
-    const sqlQuery = `SELECT 
+exports.selectAllArticles = (topic) => {
+    let sqlQuery = `SELECT 
     articles.author,
     articles.title,
     articles.article_id,
@@ -39,13 +39,25 @@ exports.selectAllArticles = () => {
     COUNT(comments.comment_id) AS comment_count
     FROM 
     articles
-    LEFT JOIN comments ON articles.article_id = comments.article_id
+    LEFT JOIN comments ON articles.article_id = comments.article_id`;
+
+    const queryValues = []
+    
+    if (topic){
+        sqlQuery += ` 
+        WHERE 
+        topic = $1`;
+        queryValues.push(topic)
+    }
+    
+    sqlQuery += `
     GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC;
-`;
-    return db.query(sqlQuery)
+    ORDER BY created_at DESC;
+    `;
+
+    return db.query(sqlQuery, queryValues)
     .then(({rows}) => {
-        if(rows.length === 0){
+        if(topic && rows.length === 0){
             return Promise.reject({status: 404, msg: 'Not Found'})
         }
         return rows;
@@ -138,7 +150,6 @@ exports.selectUsers = () => {
         if(rows.length === 0){
             return Promise.reject({status: 404, msg: 'Not Found'})
         }
-        console.groupCollapsed(rows, '------ rows')
         return rows
     })
 }
